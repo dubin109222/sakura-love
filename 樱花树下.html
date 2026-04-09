@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>For 毛兰淏 🌸</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+}
+canvas { display: block; }
+
+#overlay {
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 10;
+    opacity: 1;
+    transition: opacity 3s;
+}
+
+#text {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 34px;
+    color: #ffd6ec;
+    text-shadow: 0 0 15px #ff66cc;
+    white-space: nowrap;
+    border-right: 2px solid #fff;
+    overflow: hidden;
+}
+
+#hint {
+    position: absolute;
+    bottom: 40px;
+    width: 100%;
+    text-align: center;
+    color: #aaa;
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="overlay"></div>
+<div id="text"></div>
+<div id="hint">点击屏幕开启浪漫 💖</div>
+
+<canvas id="canvas"></canvas>
+
+<audio id="bgm" loop>
+<source src="https://cdn.pixabay.com/audio/2023/03/28/audio_6b4c2b6f0b.mp3">
+</audio>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+// ⭐ 星星
+let stars = Array.from({length:200},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*1.5
+}));
+
+// 🌠 流星
+let meteors=[];
+class Meteor{
+    constructor(){
+        this.x=Math.random()*canvas.width;
+        this.y=0;
+        this.len=80;
+        this.speed=6;
+    }
+    update(){this.x+=this.speed;this.y+=this.speed;}
+    draw(){
+        ctx.beginPath();
+        ctx.moveTo(this.x,this.y);
+        ctx.lineTo(this.x-this.len,this.y-this.len);
+        ctx.strokeStyle="white";
+        ctx.stroke();
+    }
+}
+
+// 🌸 花瓣
+class Petal{
+    constructor(x,y){
+        this.x=x;
+        this.y=y;
+        this.size=5;
+        this.vx=Math.random()-0.5;
+        this.vy=Math.random()*1+0.5;
+        this.rot=Math.random();
+    }
+    update(){
+        this.x+=this.vx+Math.sin(this.y*0.01);
+        this.y+=this.vy;
+        this.rot+=0.02;
+    }
+    draw(){
+        ctx.save();
+        ctx.translate(this.x,this.y);
+        ctx.rotate(this.rot);
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.bezierCurveTo(6,-6,12,6,0,12);
+        ctx.bezierCurveTo(-12,6,-6,-6,0,0);
+        ctx.fillStyle="#ffb7d5";
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+let petals=[];
+
+// 🌳 树
+function drawTree(alpha){
+    ctx.globalAlpha=alpha;
+    ctx.strokeStyle="#4b2e2e";
+    ctx.lineWidth=6;
+
+    function branch(x,y,len,angle,depth){
+        if(depth===0)return;
+        let x2=x+len*Math.cos(angle);
+        let y2=y+len*Math.sin(angle);
+
+        ctx.beginPath();
+        ctx.moveTo(x,y);
+        ctx.lineTo(x2,y2);
+        ctx.stroke();
+
+        branch(x2,y2,len*0.7,angle-0.5,depth-1);
+        branch(x2,y2,len*0.7,angle+0.5,depth-1);
+
+        if(depth<3){
+            ctx.beginPath();
+            ctx.arc(x2,y2,5,0,Math.PI*2);
+            ctx.fillStyle="#ff99cc";
+            ctx.fill();
+        }
+    }
+
+    branch(canvas.width/2,canvas.height,100,-Math.PI/2,8);
+    ctx.globalAlpha=1;
+}
+
+// ✍️ 打字
+let text="毛兰淏，我喜欢你 💖";
+let idx=0;
+function typing(){
+    if(idx<=text.length){
+        document.getElementById("text").innerText=text.slice(0,idx);
+        idx++;
+        setTimeout(typing,120);
+    }
+}
+
+// ❤️ 聚合
+function heart(){
+    petals.forEach((p,i)=>{
+        let t=i/150*Math.PI*2;
+        let x=16*Math.pow(Math.sin(t),3);
+        let y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
+        p.x=canvas.width/2+x*10;
+        p.y=canvas.height/2+y*10;
+    });
+}
+
+// 🎬 动画阶段
+let stage=0;
+let treeAlpha=0;
+
+function animate(){
+    ctx.fillStyle="rgba(0,0,0,0.3)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // 星空
+    stars.forEach(s=>{
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle="white";
+        ctx.fill();
+    });
+
+    // 流星
+    if(Math.random()<0.02) meteors.push(new Meteor());
+    meteors.forEach(m=>{m.update();m.draw();});
+
+    // 树渐显
+    if(stage>=2){
+        treeAlpha+=0.01;
+        drawTree(treeAlpha);
+    }
+
+    // 花瓣
+    petals.forEach(p=>{p.update();p.draw();});
+
+    requestAnimationFrame(animate);
+}
+
+// 🎬 开场流程
+function start(){
+    document.getElementById("bgm").play();
+    document.getElementById("overlay").style.opacity=0;
+    document.getElementById("hint").style.display="none";
+
+    setTimeout(()=>stage=1,1000);
+    setTimeout(()=>{
+        stage=2;
+        for(let i=0;i<150;i++){
+            petals.push(new Petal(Math.random()*canvas.width,Math.random()*canvas.height));
+        }
+    },2000);
+
+    setTimeout(()=>heart(),5000);
+    setTimeout(()=>typing(),7000);
+}
+
+// 📱 微信兼容（必须用户触发）
+document.body.addEventListener("click", start, {once:true});
+document.body.addEventListener("touchstart", start, {once:true});
+
+animate();
+</script>
+
+</body>
+</html>
