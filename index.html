@@ -349,62 +349,214 @@ body.started .note-card {
     animation: shineSweep 8s ease-in-out infinite;
 }
 
-#photoFrame {
+#memoryShowcase {
     position: relative;
-    margin: 0;
-    padding: 10px 10px 36px;
-    border-radius: 20px;
-    background: linear-gradient(180deg, rgba(255, 250, 252, 0.96), rgba(252, 237, 243, 0.9));
-    box-shadow:
-        0 22px 40px rgba(0, 0, 0, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    transform: rotate(-2.2deg);
+    display: grid;
+    gap: 12px;
 }
 
-#photoFrame::before,
-#photoFrame::after {
+#memoryShowcaseHead {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 2px 2px 0;
+}
+
+#memoryShowcaseKicker {
+    margin: 0 0 5px;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 223, 232, 0.62);
+}
+
+#memoryShowcaseTitle {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.35;
+    color: rgba(255, 245, 247, 0.94);
+    text-shadow: 0 0 22px rgba(255, 183, 210, 0.12);
+}
+
+#memoryShowcaseMark {
+    flex-shrink: 0;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 238, 241, 0.8);
+}
+
+.memoryLane {
+    position: relative;
+    padding: 12px;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 18px 42px rgba(0, 0, 0, 0.16);
+}
+
+.memoryLane::before {
     content: "";
     position: absolute;
-    top: -10px;
-    width: 56px;
-    height: 16px;
-    border-radius: 8px;
-    background: rgba(255, 232, 205, 0.46);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
 }
 
-#photoFrame::before {
-    left: 20px;
-    transform: rotate(-7deg);
+.memoryLane[data-tone="rose"] {
+    background: linear-gradient(160deg, rgba(78, 31, 53, 0.76), rgba(24, 18, 34, 0.62));
 }
 
-#photoFrame::after {
-    right: 20px;
-    transform: rotate(8deg);
+.memoryLane[data-tone="rose"]::before {
+    background:
+        radial-gradient(circle at 18% 16%, rgba(255, 196, 221, 0.2), transparent 30%),
+        linear-gradient(140deg, rgba(255, 255, 255, 0.12), transparent 46%, rgba(255, 216, 178, 0.08) 100%);
 }
 
-#photoPrint {
-    display: block;
-    width: 100%;
-    aspect-ratio: 13 / 18;
-    object-fit: cover;
-    border-radius: 14px;
-    box-shadow:
-        0 10px 24px rgba(83, 41, 60, 0.18),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.28);
-    filter: saturate(0.95) contrast(1.03) brightness(0.98);
+.memoryLane[data-tone="teal"] {
+    background: linear-gradient(160deg, rgba(18, 45, 63, 0.84), rgba(16, 20, 34, 0.68));
 }
 
-#photoCaption {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 12px;
-    text-align: center;
-    font-size: 10px;
-    letter-spacing: 0.22em;
+.memoryLane[data-tone="teal"]::before {
+    background:
+        radial-gradient(circle at 82% 12%, rgba(118, 255, 238, 0.16), transparent 32%),
+        linear-gradient(140deg, rgba(255, 255, 255, 0.12), transparent 42%, rgba(119, 255, 226, 0.08) 100%);
+}
+
+.memoryLaneHeader,
+.memoryLaneTitle,
+.memoryLaneNote,
+.memoryStage {
+    position: relative;
+}
+
+.memoryLaneHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.memoryLaneBadge {
+    font-size: 9px;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: #8f6577;
+    color: rgba(255, 237, 241, 0.64);
+}
+
+.memoryLaneCount {
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: rgba(255, 246, 248, 0.82);
+}
+
+.memoryLaneTitle {
+    margin: 9px 0 4px;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.memoryLaneNote {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.56;
+    color: rgba(255, 240, 243, 0.74);
+}
+
+.memoryStage {
+    margin-top: 12px;
+    aspect-ratio: 16 / 9;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #0f1019;
+    box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.24),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.memoryStage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(4, 8, 14, 0.08), rgba(4, 8, 14, 0.2)),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.06), transparent 30%, transparent 72%, rgba(255, 255, 255, 0.04));
+    pointer-events: none;
+    z-index: 4;
+}
+
+.memoryPhoto {
+    position: absolute;
+    inset: -3%;
+    width: 106%;
+    height: 106%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.12);
+    transition:
+        opacity 1.4s ease,
+        transform 7.8s ease,
+        filter 1.4s ease;
+    filter: saturate(0.88) contrast(1.02) brightness(0.92);
+}
+
+.memoryPhoto.is-active {
+    opacity: 1;
+    transform: scale(1.02);
+    filter: saturate(1.04) contrast(1.04) brightness(1);
+}
+
+.memoryAura,
+.memorySparkle {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.memoryAura {
+    background:
+        radial-gradient(circle at 18% 24%, rgba(255, 173, 207, 0.16), transparent 28%),
+        radial-gradient(circle at 82% 22%, rgba(255, 236, 182, 0.12), transparent 26%),
+        linear-gradient(180deg, transparent 42%, rgba(5, 8, 14, 0.18) 100%);
+    mix-blend-mode: screen;
+    animation: memoryAurora 9.5s ease-in-out infinite;
+}
+
+.memorySparkle {
+    background-image:
+        radial-gradient(circle at 18% 28%, rgba(255, 255, 255, 0.52) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 74% 20%, rgba(255, 228, 189, 0.46) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 84% 70%, rgba(255, 198, 223, 0.42) 0 1px, transparent 1.5px);
+    background-size: 100% 100%;
+    animation: memoryTwinkle 5.8s ease-in-out infinite;
+}
+
+.memorySceneLabel {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 5;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(8, 12, 22, 0.48);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-size: 9px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: rgba(255, 246, 248, 0.84);
 }
 
 #messageHeader,
@@ -713,6 +865,32 @@ body.started .note-card {
     }
 }
 
+@keyframes memoryAurora {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        opacity: 0.82;
+    }
+
+    50% {
+        transform: translate3d(1.6%, -2.4%, 0) scale(1.06);
+        opacity: 1;
+    }
+}
+
+@keyframes memoryTwinkle {
+    0%,
+    100% {
+        opacity: 0.42;
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        opacity: 0.86;
+        transform: translate3d(-1.4%, 1.8%, 0);
+    }
+}
+
 @media (max-width: 1100px) {
     #contentGrid {
         grid-template-columns: 1fr;
@@ -727,7 +905,7 @@ body.started .note-card {
     }
 
     #messageCard {
-        width: min(248px, 34vw);
+        width: min(292px, 40vw);
     }
 }
 
@@ -795,29 +973,54 @@ body.started .note-card {
     }
 
     #messageCard {
-        width: min(176px, 42vw);
-        max-width: 176px;
+        width: min(232px, 62vw);
+        max-width: 232px;
         padding: 10px;
         border-radius: 22px;
     }
 
-    #photoFrame {
-        padding: 8px 8px 26px;
-        border-radius: 16px;
-        transform: rotate(-1.2deg);
+    #memoryShowcase {
+        gap: 10px;
     }
 
-    #photoFrame::before,
-    #photoFrame::after {
-        top: -8px;
-        width: 36px;
-        height: 12px;
+    #memoryShowcaseHead {
+        gap: 8px;
     }
 
-    #photoCaption {
-        bottom: 9px;
+    #memoryShowcaseTitle {
+        font-size: 15px;
+    }
+
+    #memoryShowcaseMark {
+        padding: 7px 9px;
         font-size: 9px;
-        letter-spacing: 0.18em;
+    }
+
+    .memoryLane {
+        padding: 10px;
+        border-radius: 18px;
+    }
+
+    .memoryLaneTitle {
+        margin-top: 8px;
+        font-size: 16px;
+    }
+
+    .memoryLaneNote {
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .memoryStage {
+        margin-top: 10px;
+        border-radius: 14px;
+    }
+
+    .memorySceneLabel {
+        left: 10px;
+        bottom: 10px;
+        padding: 5px 9px;
+        font-size: 8px;
     }
 
     #cardFooter {
@@ -885,15 +1088,44 @@ body.started .note-card {
     }
 
     #messageCard {
-        width: min(148px, 39vw);
-        max-width: 148px;
+        width: min(214px, 62vw);
+        max-width: 214px;
         padding: 9px;
         border-radius: 20px;
     }
 
-    #photoFrame {
-        padding: 7px 7px 22px;
-        border-radius: 14px;
+    #memoryShowcaseHead {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #memoryShowcaseKicker {
+        font-size: 9px;
+    }
+
+    #memoryShowcaseTitle {
+        font-size: 14px;
+    }
+
+    .memoryLane {
+        padding: 9px;
+    }
+
+    .memoryLaneHeader {
+        gap: 8px;
+    }
+
+    .memoryLaneBadge,
+    .memoryLaneCount {
+        font-size: 8px;
+    }
+
+    .memoryLaneTitle {
+        font-size: 15px;
+    }
+
+    .memoryStage {
+        border-radius: 13px;
     }
 }
 
@@ -917,7 +1149,7 @@ body.started .note-card {
     <header id="romanceHead">
         <p id="eyebrow">For 毛兰淏</p>
         <h1 id="heroTitle">今夜有花、有月，<br>还有很多句偏爱想递给你</h1>
-        <p id="heroCopy">左边留着今夜的小小偏爱，右下角放一张喜欢的合照。让星光、樱花和晚风，一起把这份心动铺得更柔软一点。</p>
+        <p id="heroCopy">左边留着今夜的小小偏爱，右侧把双人成行和双影奇境分成两层慢慢放映。让星光、樱花和晚风，一起把这份心动铺得更柔软一点。</p>
         <div id="heroBadges">
             <span class="heroBadge">月色在场</span>
             <span class="heroBadge">樱花作证</span>
@@ -930,24 +1162,53 @@ body.started .note-card {
         <section id="noteWall" aria-label="写给你的短句卡片"></section>
 
         <section id="messageCard" aria-live="polite">
-            <figure id="photoFrame" aria-label="小梅和科迪的照片">
-                <img id="photoPrint" src="assets/characters/ittakes-two-photo-clean.png" alt="双人成行里的小梅和科迪">
-                <figcaption id="photoCaption">It Takes Two</figcaption>
-            </figure>
+            <div id="memoryShowcase" aria-label="双人成行与双影奇境的幻灯片相册">
+                <div id="memoryShowcaseHead">
+                    <div>
+                        <p id="memoryShowcaseKicker">Moonlit Gallery</p>
+                        <h3 id="memoryShowcaseTitle">一起冒险的日子</h3>
+                    </div>
+                    <span id="memoryShowcaseMark">双线存档</span>
+                </div>
+
+                <article id="itTakesTwoLane" class="memoryLane" data-tone="rose">
+                    <div class="memoryLaneHeader">
+                        <span class="memoryLaneBadge">Sakura Reel</span>
+                        <span class="memoryLaneCount">01 / 06</span>
+                    </div>
+                    <h4 class="memoryLaneTitle">双人成行</h4>
+                    <p class="memoryLaneNote">小梅和科迪的雪地、花园和并肩时刻，在樱花夜里轮流闪回。</p>
+                    <div class="memoryStage">
+                        <img class="memoryPhoto is-active" alt="双人成行游戏画面">
+                        <img class="memoryPhoto" alt="双人成行游戏画面">
+                        <div class="memoryAura"></div>
+                        <div class="memorySparkle"></div>
+                        <span class="memorySceneLabel">Scene 01</span>
+                    </div>
+                </article>
+
+                <article id="splitFantasyLane" class="memoryLane" data-tone="teal">
+                    <div class="memoryLaneHeader">
+                        <span class="memoryLaneBadge">Fantasy Reel</span>
+                        <span class="memoryLaneCount">01 / 06</span>
+                    </div>
+                    <h4 class="memoryLaneTitle">双影奇境</h4>
+                    <p class="memoryLaneNote">霓虹、裂界和奇境场景分层闪现，像在夜色里开了第二扇门。</p>
+                    <div class="memoryStage">
+                        <img class="memoryPhoto is-active" alt="双影奇境游戏画面">
+                        <img class="memoryPhoto" alt="双影奇境游戏画面">
+                        <div class="memoryAura"></div>
+                        <div class="memorySparkle"></div>
+                        <span class="memorySceneLabel">Scene 01</span>
+                    </div>
+                </article>
+            </div>
             <div id="messageHeader">
                 <p id="tag">Moonlight Letter</p>
                 <span id="cardIndex">01 / 06</span>
             </div>
             <h2 id="title">把今晚的温柔，都慢慢说给你听</h2>
             <p id="messageText"></p>
-            <div id="cardControls">
-                <button id="nextNote" class="cardButton" type="button">下一封心意</button>
-                <button id="replayNote" class="cardButton secondary" type="button">重看这一句</button>
-            </div>
-            <div id="cardFooter">
-                <span id="signature">Only for 毛兰淏</span>
-                <span id="cardHint">也可以轻点左侧的小卡片，它们会悄悄替我翻到对应的那一句。</span>
-            </div>
         </section>
     </div>
 </div>
@@ -983,7 +1244,6 @@ const tag = document.getElementById("tag");
 const cardIndex = document.getElementById("cardIndex");
 const title = document.getElementById("title");
 const messageText = document.getElementById("messageText");
-const signature = document.getElementById("signature");
 const nextNote = document.getElementById("nextNote");
 const replayNote = document.getElementById("replayNote");
 
@@ -1062,6 +1322,38 @@ const letters = [
     }
 ];
 
+const galleryReels = [
+    {
+        laneId: "itTakesTwoLane",
+        altBase: "双人成行游戏画面",
+        scenePrefix: "Reel",
+        interval: 4200,
+        startIndex: 0,
+        images: [
+            "assets/gallery/it-takes-two-01.jpg",
+            "assets/gallery/it-takes-two-02.jpeg",
+            "assets/gallery/it-takes-two-03.jpg",
+            "assets/gallery/it-takes-two-05.jpeg",
+            "assets/gallery/it-takes-two-06.jpeg"
+        ]
+    },
+    {
+        laneId: "splitFantasyLane",
+        altBase: "双影奇境游戏画面",
+        scenePrefix: "Dream",
+        interval: 4600,
+        startIndex: 0,
+        images: [
+            "assets/gallery/split-fantasy-05.jpg",
+            "assets/gallery/split-fantasy-01.jpeg",
+            "assets/gallery/split-fantasy-02.jpeg",
+            "assets/gallery/split-fantasy-03.jpg",
+            "assets/gallery/split-fantasy-04.jpeg",
+            "assets/gallery/split-fantasy-06.jpeg"
+        ]
+    }
+];
+
 const pocketNotes = [
     {
         title: "偏爱",
@@ -1107,6 +1399,7 @@ const pocketNotes = [
 
 const noteTilts = ["-2.6deg", "1.8deg", "-1.2deg", "2.4deg", "-1.8deg", "1.3deg", "-2.1deg", "2deg"];
 const TAU = Math.PI * 2;
+const reducedMotionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const scene = {
     width: 0,
@@ -2148,6 +2441,97 @@ function renderNoteWall() {
     });
 }
 
+function setGalleryImage(node, reel, index) {
+    if (!node || !reel.images.length) {
+        return;
+    }
+
+    node.src = reel.images[index];
+    node.alt = reel.altBase + " " + String(index + 1).padStart(2, "0");
+}
+
+function updateGalleryMeta(reelState) {
+    const total = reelState.reel.images.length;
+    const current = String(reelState.index + 1).padStart(2, "0");
+    const totalText = String(total).padStart(2, "0");
+
+    if (reelState.countNode) {
+        reelState.countNode.textContent = current + " / " + totalText;
+    }
+
+    if (reelState.labelNode) {
+        reelState.labelNode.textContent = reelState.reel.scenePrefix + " " + current;
+    }
+}
+
+function preloadGalleryImage(src) {
+    const image = new Image();
+    image.src = src;
+}
+
+function advanceGalleryLane(reelState) {
+    const nextIndex = (reelState.index + 1) % reelState.reel.images.length;
+    const incomingSlot = 1 - reelState.activeSlot;
+    const outgoing = reelState.photos[reelState.activeSlot];
+    const incoming = reelState.photos[incomingSlot];
+
+    setGalleryImage(incoming, reelState.reel, nextIndex);
+
+    window.requestAnimationFrame(() => {
+        incoming.classList.add("is-active");
+        outgoing.classList.remove("is-active");
+    });
+
+    reelState.index = nextIndex;
+    reelState.activeSlot = incomingSlot;
+    updateGalleryMeta(reelState);
+
+    const preloadIndex = (nextIndex + 1) % reelState.reel.images.length;
+    preloadGalleryImage(reelState.reel.images[preloadIndex]);
+}
+
+function setupMemoryGallery() {
+    galleryReels.forEach((reel) => {
+        const lane = document.getElementById(reel.laneId);
+        if (!lane) {
+            return;
+        }
+
+        const photos = lane.querySelectorAll(".memoryPhoto");
+        if (photos.length < 2 || reel.images.length === 0) {
+            return;
+        }
+
+        const reelState = {
+            reel: reel,
+            photos: photos,
+            activeSlot: 0,
+            index: Math.min(reel.startIndex, reel.images.length - 1),
+            countNode: lane.querySelector(".memoryLaneCount"),
+            labelNode: lane.querySelector(".memorySceneLabel")
+        };
+
+        const nextIndex = (reelState.index + 1) % reel.images.length;
+        setGalleryImage(photos[0], reel, reelState.index);
+        setGalleryImage(photos[1], reel, nextIndex);
+        photos[0].classList.add("is-active");
+        photos[1].classList.remove("is-active");
+        updateGalleryMeta(reelState);
+        preloadGalleryImage(reel.images[nextIndex]);
+
+        if (!reducedMotionMedia.matches && reel.images.length > 1) {
+            window.setInterval(() => {
+                advanceGalleryLane(reelState);
+            }, reel.interval);
+        }
+
+        lane.addEventListener("click", (event) => {
+            event.stopPropagation();
+            advanceGalleryLane(reelState);
+        });
+    });
+}
+
 function updateActiveNoteCard() {
     const cards = noteWall.querySelectorAll(".note-card");
     cards.forEach((card) => {
@@ -2196,9 +2580,12 @@ function showLetter(index, options = {}) {
 
     state.noteIndex = normalized;
     tag.textContent = letter.tag;
-    title.textContent = letter.title;
-    signature.textContent = letter.signature;
     cardIndex.textContent = String(normalized + 1).padStart(2, "0") + " / " + String(letters.length).padStart(2, "0");
+
+    if (title) {
+        title.textContent = letter.title;
+    }
+
     updateActiveNoteCard();
 
     if (instant) {
@@ -2377,6 +2764,7 @@ function render(time) {
 }
 
 renderNoteWall();
+setupMemoryGallery();
 showLetter(0, { instant: true });
 resizeScene();
 playMusic();
@@ -2396,15 +2784,19 @@ noteWall.addEventListener("click", (event) => {
     goToLetter(Number(card.dataset.letter));
 });
 
-nextNote.addEventListener("click", (event) => {
-    event.stopPropagation();
-    goToLetter(state.noteIndex + 1);
-});
+if (nextNote) {
+    nextNote.addEventListener("click", (event) => {
+        event.stopPropagation();
+        goToLetter(state.noteIndex + 1);
+    });
+}
 
-replayNote.addEventListener("click", (event) => {
-    event.stopPropagation();
-    goToLetter(state.noteIndex);
-});
+if (replayNote) {
+    replayNote.addEventListener("click", (event) => {
+        event.stopPropagation();
+        goToLetter(state.noteIndex);
+    });
+}
 
 window.addEventListener("keydown", (event) => {
     if (!state.started) {
