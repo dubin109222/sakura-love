@@ -106,15 +106,132 @@ button {
     position: fixed;
     inset: 0;
     z-index: 4;
+    padding: clamp(16px, 2.8vw, 30px);
+    overflow: hidden;
+}
+
+#bookShell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#pageTrack {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.82s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+
+.storyPage {
+    flex: 0 0 100%;
+    min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 4px;
+    scrollbar-width: none;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.storyPage::-webkit-scrollbar {
+    display: none;
+}
+
+.storyPageInner {
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 18px;
-    padding: clamp(16px, 2.8vw, 30px);
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
+    padding-bottom: 92px;
+}
+
+.storyPage--chapter .storyPageInner {
+    justify-content: flex-start;
+    gap: 18px;
+}
+
+#bookNav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 6;
+    display: flex;
+    justify-content: center;
+    padding:
+        10px
+        0
+        calc(10px + env(safe-area-inset-bottom));
+    pointer-events: none;
+}
+
+#bookNavInner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: min(560px, calc(100% - 12px));
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(155deg, rgba(41, 18, 34, 0.84), rgba(9, 14, 24, 0.72));
+    box-shadow:
+        0 16px 42px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    pointer-events: auto;
+}
+
+.bookNavButton {
+    min-width: 92px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    color: var(--ink);
+    background: linear-gradient(135deg, rgba(255, 185, 214, 0.28), rgba(255, 224, 168, 0.18));
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        0 10px 22px rgba(0, 0, 0, 0.14);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+}
+
+.bookNavButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 16px 28px rgba(0, 0, 0, 0.2);
+}
+
+.bookNavButton:disabled {
+    opacity: 0.42;
+    cursor: default;
+}
+
+#bookNavMeta {
+    min-width: 0;
+    text-align: center;
+}
+
+#bookNavCount {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255, 230, 238, 0.58);
+}
+
+#bookNavLabel {
+    display: block;
+    margin-top: 3px;
+    font-size: 14px;
+    color: rgba(255, 246, 248, 0.9);
+}
 }
 
 #romanceHead {
@@ -190,6 +307,11 @@ button {
     grid-template-columns: minmax(0, 1fr) minmax(300px, 430px);
     gap: clamp(14px, 2.2vw, 24px);
     align-items: end;
+}
+
+#notePanel {
+    display: grid;
+    justify-items: end;
 }
 
 #noteWall {
@@ -559,6 +681,60 @@ body.started .note-card {
     color: rgba(255, 246, 248, 0.84);
 }
 
+.chapterIntro {
+    width: min(760px, 100%);
+    padding: clamp(18px, 3vw, 24px);
+    border-radius: 28px;
+    background: linear-gradient(155deg, rgba(48, 19, 38, 0.64), rgba(11, 14, 24, 0.42));
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+        0 22px 58px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.chapterEyebrow {
+    margin: 0 0 8px;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 223, 232, 0.62);
+}
+
+.chapterTitle {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 44px);
+    line-height: 1.1;
+}
+
+.chapterCopy {
+    margin: 12px 0 0;
+    max-width: 32em;
+    font-size: clamp(14px, 2vw, 16px);
+    line-height: 1.72;
+    color: rgba(255, 240, 244, 0.82);
+}
+
+.chapterStageWrap {
+    width: min(920px, 100%);
+}
+
+.memoryLane--chapter {
+    padding: 14px;
+}
+
+.memoryLane--chapter .memoryStage {
+    aspect-ratio: 16 / 10;
+}
+
+.chapterHint {
+    margin: 10px 4px 0;
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(255, 236, 242, 0.66);
+}
+
 #messageHeader,
 #tag,
 #cardIndex,
@@ -904,6 +1080,10 @@ body.started .note-card {
         max-width: none;
     }
 
+    #notePanel {
+        justify-items: stretch;
+    }
+
     #messageCard {
         width: min(292px, 40vw);
     }
@@ -915,14 +1095,26 @@ body.started .note-card {
     }
 
     #overlay {
-        position: relative;
-        min-height: 100dvh;
-        justify-content: flex-start;
-        gap: 12px;
         padding:
             calc(14px + env(safe-area-inset-top))
             14px
             calc(18px + env(safe-area-inset-bottom));
+    }
+
+    #bookNavInner {
+        width: 100%;
+        padding: 9px 10px;
+        gap: 8px;
+    }
+
+    .bookNavButton {
+        min-width: 84px;
+        padding: 9px 10px;
+        font-size: 12px;
+    }
+
+    #bookNavLabel {
+        font-size: 12px;
     }
 
     #romanceHead {
@@ -963,6 +1155,10 @@ body.started .note-card {
         mask-image: none;
         -webkit-mask-image: none;
         scroll-padding-inline: 8px;
+    }
+
+    #notePanel {
+        justify-items: stretch;
     }
 
     .note-card {
@@ -1030,6 +1226,29 @@ body.started .note-card {
         bottom: 10px;
         padding: 5px 9px;
         font-size: 8px;
+    }
+
+    .storyPageInner {
+        gap: 14px;
+        padding-bottom: 88px;
+    }
+
+    .chapterIntro {
+        padding: 16px 14px 18px;
+        border-radius: 22px;
+    }
+
+    .chapterTitle {
+        font-size: clamp(24px, 7.2vw, 34px);
+    }
+
+    .chapterCopy {
+        font-size: 13px;
+        line-height: 1.62;
+    }
+
+    .memoryLane--chapter {
+        padding: 10px;
     }
 
     #cardFooter {
@@ -1109,6 +1328,19 @@ body.started .note-card {
         align-items: flex-start;
     }
 
+    #bookNav {
+        padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    }
+
+    #bookNavInner {
+        border-radius: 24px;
+    }
+
+    .bookNavButton {
+        min-width: 76px;
+        font-size: 11px;
+    }
+
     #memoryShowcaseKicker {
         font-size: 9px;
     }
@@ -1143,6 +1375,12 @@ body.started .note-card {
     .memoryStage {
         border-radius: 13px;
     }
+
+    .chapterHint {
+        margin-top: 8px;
+        font-size: 11px;
+        line-height: 1.5;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1162,70 +1400,149 @@ body.started .note-card {
 <div id="veil"></div>
 
 <div id="overlay">
-    <header id="romanceHead">
-        <p id="eyebrow">For 毛兰淏</p>
-        <h1 id="heroTitle">今夜有花、有月，<br>还有很多句偏爱想递给你</h1>
-        <p id="heroCopy">留着今夜的小小偏爱，让星光、樱花和晚风，一起把这份心动铺得更柔软一点。</p>
-        <div id="heroBadges">
-            <span class="heroBadge">月色在场</span>
-            <span class="heroBadge">樱花作证</span>
-            <span class="heroBadge">偏爱加倍</span>
-            <span class="heroBadge">心动存档</span>
-        </div>
-    </header>
+    <div id="bookShell">
+        <div id="pageTrack">
+            <section class="storyPage storyPage--home">
+                <div class="storyPageInner">
+                    <header id="romanceHead">
+                        <p id="eyebrow">For 毛兰淏</p>
+                        <h1 id="heroTitle">今夜有花、有月，<br>还有很多句偏爱想递给你</h1>
+                        <p id="heroCopy">留着今夜的小小偏爱，让星光、樱花和晚风，一起把这份心动铺得更柔软一点。</p>
+                        <div id="heroBadges">
+                            <span class="heroBadge">月色在场</span>
+                            <span class="heroBadge">樱花作证</span>
+                            <span class="heroBadge">偏爱加倍</span>
+                            <span class="heroBadge">心动存档</span>
+                        </div>
+                    </header>
 
-    <div id="contentGrid">
-        <section id="noteWall" aria-label="写给你的短句卡片"></section>
+                    <div id="contentGrid">
+                        <div id="notePanel">
+                            <section id="noteWall" aria-label="写给你的短句卡片"></section>
+                        </div>
 
-        <section id="messageCard" aria-live="polite">
-            <div id="memoryShowcase" aria-label="双人成行与双影奇境的幻灯片相册">
-                <div id="memoryShowcaseHead">
-                    <div>
-                        <p id="memoryShowcaseKicker">Moonlit Gallery</p>
-                        <h3 id="memoryShowcaseTitle">一起冒险的日子</h3>
+                        <section id="messageCard" aria-live="polite">
+                            <div id="memoryShowcase" aria-label="双人成行与双影奇境的幻灯片相册">
+                                <div id="memoryShowcaseHead">
+                                    <div>
+                                        <p id="memoryShowcaseKicker">Moonlit Gallery</p>
+                                        <h3 id="memoryShowcaseTitle">一起冒险的日子</h3>
+                                    </div>
+                                    <span id="memoryShowcaseMark">我们的冒险</span>
+                                </div>
+
+                                <article id="itTakesTwoLane" class="memoryLane" data-tone="rose">
+                                    <div class="memoryLaneHeader">
+                                        <span class="memoryLaneBadge">Sakura Reel</span>
+                                        <span class="memoryLaneCount">01 / 05</span>
+                                    </div>
+                                    <h4 class="memoryLaneTitle">双人成行</h4>
+                                    <p class="memoryLaneNote">小梅和科迪的雪地、花园和并肩时刻，在樱花夜里轮流闪回。</p>
+                                    <div class="memoryStage">
+                                        <img class="memoryPhoto is-active" alt="双人成行游戏画面">
+                                        <img class="memoryPhoto" alt="双人成行游戏画面">
+                                        <div class="memoryAura"></div>
+                                        <div class="memorySparkle"></div>
+                                        <span class="memorySceneLabel">Scene 01</span>
+                                    </div>
+                                </article>
+
+                                <article id="splitFantasyLane" class="memoryLane" data-tone="teal">
+                                    <div class="memoryLaneHeader">
+                                        <span class="memoryLaneBadge">Fantasy Reel</span>
+                                        <span class="memoryLaneCount">01 / 06</span>
+                                    </div>
+                                    <h4 class="memoryLaneTitle">双影奇境</h4>
+                                    <p class="memoryLaneNote">霓虹、裂界和奇境场景分层闪现，像在夜色里开了第二扇门。</p>
+                                    <div class="memoryStage">
+                                        <img class="memoryPhoto is-active" alt="双影奇境游戏画面">
+                                        <img class="memoryPhoto" alt="双影奇境游戏画面">
+                                        <div class="memoryAura"></div>
+                                        <div class="memorySparkle"></div>
+                                        <span class="memorySceneLabel">Scene 01</span>
+                                    </div>
+                                </article>
+                            </div>
+                            <div id="messageHeader">
+                                <p id="tag">Moonlight Letter</p>
+                                <span id="cardIndex">01 / 06</span>
+                            </div>
+                            <h2 id="title">把今晚的温柔，都慢慢说给你听</h2>
+                            <p id="messageText"></p>
+                        </section>
                     </div>
-                    <span id="memoryShowcaseMark">我们的冒险</span>
                 </div>
+            </section>
 
-                <article id="itTakesTwoLane" class="memoryLane" data-tone="rose">
-                    <div class="memoryLaneHeader">
-                        <span class="memoryLaneBadge">Sakura Reel</span>
-                        <span class="memoryLaneCount">01 / 06</span>
+            <section class="storyPage storyPage--chapter">
+                <div class="storyPageInner">
+                    <div class="chapterIntro">
+                        <p class="chapterEyebrow">Chapter 02</p>
+                        <h2 class="chapterTitle">双人成行</h2>
+                        <p class="chapterCopy">把雪地、花园、月下并肩这些瞬间，单独翻成第二页慢慢放映。往后翻的时候，像把整段并肩冒险都重新看一遍。</p>
                     </div>
-                    <h4 class="memoryLaneTitle">双人成行</h4>
-                    <p class="memoryLaneNote">小梅和科迪的雪地、花园和并肩时刻，在樱花夜里轮流闪回。</p>
-                    <div class="memoryStage">
-                        <img class="memoryPhoto is-active" alt="双人成行游戏画面">
-                        <img class="memoryPhoto" alt="双人成行游戏画面">
-                        <div class="memoryAura"></div>
-                        <div class="memorySparkle"></div>
-                        <span class="memorySceneLabel">Scene 01</span>
-                    </div>
-                </article>
 
-                <article id="splitFantasyLane" class="memoryLane" data-tone="teal">
-                    <div class="memoryLaneHeader">
-                        <span class="memoryLaneBadge">Fantasy Reel</span>
-                        <span class="memoryLaneCount">01 / 06</span>
+                    <div class="chapterStageWrap">
+                        <article id="itTakesTwoChapter" class="memoryLane memoryLane--chapter" data-tone="rose">
+                            <div class="memoryLaneHeader">
+                                <span class="memoryLaneBadge">Adventure Album</span>
+                                <span class="memoryLaneCount">01 / 05</span>
+                            </div>
+                            <h4 class="memoryLaneTitle">双人成行的这一页</h4>
+                            <p class="memoryLaneNote">专门留一整页，把喜欢的场景放大一点，像翻书时停在这一章舍不得走。</p>
+                            <div class="memoryStage">
+                                <img class="memoryPhoto is-active" alt="双人成行游戏画面">
+                                <img class="memoryPhoto" alt="双人成行游戏画面">
+                                <div class="memoryAura"></div>
+                                <div class="memorySparkle"></div>
+                                <span class="memorySceneLabel">Page 01</span>
+                            </div>
+                        </article>
+                        <p class="chapterHint">轻点底部的翻页按钮，就像在这一晚把故事一页一页翻下去。</p>
                     </div>
-                    <h4 class="memoryLaneTitle">双影奇境</h4>
-                    <p class="memoryLaneNote">霓虹、裂界和奇境场景分层闪现，像在夜色里开了第二扇门。</p>
-                    <div class="memoryStage">
-                        <img class="memoryPhoto is-active" alt="双影奇境游戏画面">
-                        <img class="memoryPhoto" alt="双影奇境游戏画面">
-                        <div class="memoryAura"></div>
-                        <div class="memorySparkle"></div>
-                        <span class="memorySceneLabel">Scene 01</span>
+                </div>
+            </section>
+
+            <section class="storyPage storyPage--chapter">
+                <div class="storyPageInner">
+                    <div class="chapterIntro">
+                        <p class="chapterEyebrow">Chapter 03</p>
+                        <h2 class="chapterTitle">双影奇境</h2>
+                        <p class="chapterCopy">把霓虹、裂界和奇境单独留到第三页。翻到这里时，像从樱花夜色里一下跨进了另一扇发光的门。</p>
                     </div>
-                </article>
+
+                    <div class="chapterStageWrap">
+                        <article id="splitFantasyChapter" class="memoryLane memoryLane--chapter" data-tone="teal">
+                            <div class="memoryLaneHeader">
+                                <span class="memoryLaneBadge">Fantasy Album</span>
+                                <span class="memoryLaneCount">01 / 06</span>
+                            </div>
+                            <h4 class="memoryLaneTitle">双影奇境的这一页</h4>
+                            <p class="memoryLaneNote">这一页把最想留下的奇境场景单独放大，像真的翻进了另外一册世界设定集。</p>
+                            <div class="memoryStage">
+                                <img class="memoryPhoto is-active" alt="双影奇境游戏画面">
+                                <img class="memoryPhoto" alt="双影奇境游戏画面">
+                                <div class="memoryAura"></div>
+                                <div class="memorySparkle"></div>
+                                <span class="memorySceneLabel">Page 01</span>
+                            </div>
+                        </article>
+                        <p class="chapterHint">第二页和第三页都会继续自动轮播，整页翻过去后，幻灯片还是照常放映。</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="bookNav" aria-label="翻页导航">
+            <div id="bookNavInner">
+                <button id="prevPage" class="bookNavButton" type="button">上一页</button>
+                <div id="bookNavMeta">
+                    <span id="bookNavCount">Page <span id="pageCurrent">01</span> / <span id="pageTotal">03</span></span>
+                    <span id="bookNavLabel">今夜首页</span>
+                </div>
+                <button id="nextPageButton" class="bookNavButton" type="button">下一页</button>
             </div>
-            <div id="messageHeader">
-                <p id="tag">Moonlight Letter</p>
-                <span id="cardIndex">01 / 06</span>
-            </div>
-            <h2 id="title">把今晚的温柔，都慢慢说给你听</h2>
-            <p id="messageText"></p>
-        </section>
+        </div>
     </div>
 </div>
 
@@ -1256,6 +1573,13 @@ const ctx = canvas.getContext("2d");
 const intro = document.getElementById("intro");
 const bgm = document.getElementById("bgm");
 const noteWall = document.getElementById("noteWall");
+const bookShell = document.getElementById("bookShell");
+const pageTrack = document.getElementById("pageTrack");
+const prevPage = document.getElementById("prevPage");
+const nextPageButton = document.getElementById("nextPageButton");
+const pageCurrent = document.getElementById("pageCurrent");
+const pageTotal = document.getElementById("pageTotal");
+const bookNavLabel = document.getElementById("bookNavLabel");
 const tag = document.getElementById("tag");
 const cardIndex = document.getElementById("cardIndex");
 const title = document.getElementById("title");
@@ -1338,6 +1662,25 @@ const letters = [
     }
 ];
 
+const itTakesTwoImages = [
+    "assets/gallery/it-takes-two-01.jpg",
+    "assets/gallery/it-takes-two-02.jpeg",
+    "assets/gallery/it-takes-two-03.jpg",
+    "assets/gallery/it-takes-two-05.jpeg",
+    "assets/gallery/it-takes-two-06.jpeg"
+];
+
+const splitFantasyImages = [
+    "assets/gallery/split-fantasy-05.jpg",
+    "assets/gallery/split-fantasy-01.jpeg",
+    "assets/gallery/split-fantasy-02.jpeg",
+    "assets/gallery/split-fantasy-03.jpg",
+    "assets/gallery/split-fantasy-04.jpeg",
+    "assets/gallery/split-fantasy-06.jpeg"
+];
+
+const pageLabels = ["今夜首页", "双人成行", "双影奇境"];
+
 const galleryReels = [
     {
         laneId: "itTakesTwoLane",
@@ -1345,13 +1688,7 @@ const galleryReels = [
         scenePrefix: "Reel",
         interval: 4200,
         startIndex: 0,
-        images: [
-            "assets/gallery/it-takes-two-01.jpg",
-            "assets/gallery/it-takes-two-02.jpeg",
-            "assets/gallery/it-takes-two-03.jpg",
-            "assets/gallery/it-takes-two-05.jpeg",
-            "assets/gallery/it-takes-two-06.jpeg"
-        ]
+        images: itTakesTwoImages
     },
     {
         laneId: "splitFantasyLane",
@@ -1359,14 +1696,23 @@ const galleryReels = [
         scenePrefix: "Dream",
         interval: 4600,
         startIndex: 0,
-        images: [
-            "assets/gallery/split-fantasy-05.jpg",
-            "assets/gallery/split-fantasy-01.jpeg",
-            "assets/gallery/split-fantasy-02.jpeg",
-            "assets/gallery/split-fantasy-03.jpg",
-            "assets/gallery/split-fantasy-04.jpeg",
-            "assets/gallery/split-fantasy-06.jpeg"
-        ]
+        images: splitFantasyImages
+    },
+    {
+        laneId: "itTakesTwoChapter",
+        altBase: "双人成行游戏画面",
+        scenePrefix: "Page",
+        interval: 5000,
+        startIndex: 1,
+        images: itTakesTwoImages
+    },
+    {
+        laneId: "splitFantasyChapter",
+        altBase: "双影奇境游戏画面",
+        scenePrefix: "Page",
+        interval: 5200,
+        startIndex: 0,
+        images: splitFantasyImages
     }
 ];
 
@@ -1442,7 +1788,8 @@ const state = {
     lastFrame: performance.now(),
     typingTimer: 0,
     rotationTimer: 0,
-    noteIndex: 0
+    noteIndex: 0,
+    pageIndex: 0
 };
 
 const music = {
@@ -2548,6 +2895,41 @@ function setupMemoryGallery() {
     });
 }
 
+function updateBookNav() {
+    const total = pageLabels.length;
+
+    if (pageCurrent) {
+        pageCurrent.textContent = String(state.pageIndex + 1).padStart(2, "0");
+    }
+
+    if (pageTotal) {
+        pageTotal.textContent = String(total).padStart(2, "0");
+    }
+
+    if (bookNavLabel) {
+        bookNavLabel.textContent = pageLabels[state.pageIndex] || "今夜首页";
+    }
+
+    if (prevPage) {
+        prevPage.disabled = state.pageIndex <= 0;
+    }
+
+    if (nextPageButton) {
+        nextPageButton.disabled = state.pageIndex >= total - 1;
+    }
+}
+
+function goToPage(index) {
+    const normalized = clamp(index, 0, pageLabels.length - 1);
+    state.pageIndex = normalized;
+
+    if (pageTrack) {
+        pageTrack.style.transform = "translate3d(-" + normalized * 100 + "%, 0, 0)";
+    }
+
+    updateBookNav();
+}
+
 function updateActiveNoteCard() {
     const cards = noteWall.querySelectorAll(".note-card");
     cards.forEach((card) => {
@@ -2781,6 +3163,7 @@ function render(time) {
 
 renderNoteWall();
 setupMemoryGallery();
+goToPage(0);
 showLetter(0, { instant: true });
 resizeScene();
 playMusic();
@@ -2800,6 +3183,59 @@ noteWall.addEventListener("click", (event) => {
     goToLetter(Number(card.dataset.letter));
 });
 
+if (prevPage) {
+    prevPage.addEventListener("click", (event) => {
+        event.stopPropagation();
+        goToPage(state.pageIndex - 1);
+    });
+}
+
+if (nextPageButton) {
+    nextPageButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        goToPage(state.pageIndex + 1);
+    });
+}
+
+if (bookShell) {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let trackingPageSwipe = false;
+
+    bookShell.addEventListener("touchstart", (event) => {
+        if (event.target.closest("#noteWall")) {
+            trackingPageSwipe = false;
+            return;
+        }
+
+        const touch = event.changedTouches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        trackingPageSwipe = true;
+    }, { passive: true });
+
+    bookShell.addEventListener("touchend", (event) => {
+        if (!trackingPageSwipe) {
+            return;
+        }
+
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        trackingPageSwipe = false;
+
+        if (Math.abs(deltaX) < 58 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) {
+            return;
+        }
+
+        if (deltaX < 0) {
+            goToPage(state.pageIndex + 1);
+        } else {
+            goToPage(state.pageIndex - 1);
+        }
+    }, { passive: true });
+}
+
 if (nextNote) {
     nextNote.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -2817,6 +3253,14 @@ if (replayNote) {
 window.addEventListener("keydown", (event) => {
     if (!state.started) {
         return;
+    }
+
+    if (event.key === "PageDown") {
+        goToPage(state.pageIndex + 1);
+    }
+
+    if (event.key === "PageUp") {
+        goToPage(state.pageIndex - 1);
     }
 
     if (event.key === "ArrowRight") {
