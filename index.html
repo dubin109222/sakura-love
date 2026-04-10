@@ -173,7 +173,7 @@ button {
     letter-spacing: 0.12em;
 }
 
-#musicPlayerHost {
+#bgm {
     position: fixed;
     left: -9999px;
     top: -9999px;
@@ -962,12 +962,22 @@ body.started .note-card {
     </div>
 </section>
 
-<div id="musicPlayerHost" aria-hidden="true"></div>
+<audio
+    id="bgm"
+    src="assets/music/sakura-under-the-tree-promise.mp3"
+    preload="auto"
+    autoplay
+    loop
+    playsinline
+    webkit-playsinline
+    aria-hidden="true"
+></audio>
 
 <script>
 const canvas = document.getElementById("scene");
 const ctx = canvas.getContext("2d");
 const intro = document.getElementById("intro");
+const bgm = document.getElementById("bgm");
 const noteWall = document.getElementById("noteWall");
 const tag = document.getElementById("tag");
 const cardIndex = document.getElementById("cardIndex");
@@ -976,8 +986,6 @@ const messageText = document.getElementById("messageText");
 const signature = document.getElementById("signature");
 const nextNote = document.getElementById("nextNote");
 const replayNote = document.getElementById("replayNote");
-
-const MUSIC_VIDEO_ID = "uPVuFrihYXc";
 
 const letters = [
     {
@@ -1129,11 +1137,8 @@ const state = {
 };
 
 const music = {
-    apiRequested: false,
-    player: null,
-    ready: false,
     wantsPlay: false,
-    loadTimer: 0
+    retryTimer: 0
 };
 
 function random(min, max) {
@@ -2223,114 +2228,100 @@ function goToLetter(index) {
     restartRotation();
 }
 
-function loadYouTubeAPI() {
-    if (music.apiRequested) {
+function clearMusicRetry() {
+    if (!music.retryTimer) {
         return;
     }
 
-    music.apiRequested = true;
-    const script = document.createElement("script");
-    script.src = "https://www.youtube.com/iframe_api";
-    script.async = true;
-    document.head.append(script);
-
-    music.loadTimer = window.setTimeout(() => {
-        if (!music.ready && music.wantsPlay) {
-            playMusic();
-        }
-    }, 6000);
+    window.clearTimeout(music.retryTimer);
+    music.retryTimer = 0;
 }
 
-function createMusicPlayer() {
-    if (music.player || !window.YT || !window.YT.Player) {
+function queueMusicRetry(delay = 900) {
+    if (music.retryTimer || !music.wantsPlay) {
         return;
     }
 
-    music.player = new window.YT.Player("musicPlayerHost", {
-        width: "1",
-        height: "1",
-        videoId: MUSIC_VIDEO_ID,
-        playerVars: {
-            autoplay: 1,
-            controls: 0,
-            disablekb: 1,
-            fs: 0,
-            iv_load_policy: 3,
-            loop: 1,
-            modestbranding: 1,
-            playlist: MUSIC_VIDEO_ID,
-            rel: 0,
-            playsinline: 1
-        },
-        events: {
-            onReady: () => {
-                if (music.loadTimer) {
-                    window.clearTimeout(music.loadTimer);
-                    music.loadTimer = 0;
-                }
-
-                music.ready = true;
-
-                if (music.wantsPlay) {
-                    if (typeof music.player.unMute === "function") {
-                        music.player.unMute();
-                    }
-                    music.player.playVideo();
-                }
-            },
-            onStateChange: (event) => {
-                const playerState = window.YT.PlayerState;
-
-                if (event.data === playerState.ENDED) {
-                    event.target.playVideo();
-                    return;
-                }
-
-                if (event.data === playerState.PAUSED && music.wantsPlay) {
-                    event.target.playVideo();
-                    return;
-                }
-
-                if (event.data === playerState.CUED && music.wantsPlay) {
-                    event.target.playVideo();
-                }
-            },
-            onError: () => {
-                if (music.loadTimer) {
-                    window.clearTimeout(music.loadTimer);
-                    music.loadTimer = 0;
-                }
-
-                window.setTimeout(() => {
-                    playMusic();
-                }, 1800);
-            }
-        }
-    });
+    music.retryTimer = window.setTimeout(() => {
+        music.retryTimer = 0;
+        playMusic();
+    }, delay);
 }
-
-window.onYouTubeIframeAPIReady = () => {
-    createMusicPlayer();
-};
 
 function playMusic() {
     music.wantsPlay = true;
 
-    if (music.ready && music.player) {
-        if (typeof music.player.unMute === "function") {
-            music.player.unMute();
-        }
-        music.player.playVideo();
+    if (!bgm) {
         return;
     }
 
-    if (window.YT && window.YT.Player) {
-        createMusicPlayer();
-    } else {
-        loadYouTubeAPI();
-    }
+    clearMusicRetry();
+    bgm.loop = true;
+    bgm.volume = 1;
+    bgm.muted = false;
 
+    const playAttempt = bgm.play();
+    if (playAttempt && typeof playAttempt.catch === "function") {
+        playAttempt.catch(() => {
+            queueMusicRetry();
+        });
+    }
 }
+
+if (bgm) {
+    bgm.addEventListener("canplay", () => {
+        if (music.wantsPlay && bgm.paused) {
+            playMusic();
+        }
+    });
+
+    bgm.addEventListener("pause", () => {
+        if (music.wantsPlay && !document.hidden) {
+            queueMusicRetry(260);
+        }
+    });
+
+    bgm.addEventListener("ended", () => {
+        bgm.currentTime = 0;
+        playMusic();
+    });
+
+    bgm.addEventListener("error", () => {
+        queueMusicRetry(1600);
+    });
+
+    bgm.load();
+}
+
+window.addEventListener("pageshow", () => {
+    if (music.wantsPlay && bgm && bgm.paused) {
+        queueMusicRetry(180);
+    }
+});
+
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && music.wantsPlay && bgm && bgm.paused) {
+        queueMusicRetry(180);
+    }
+});
+
+document.addEventListener("pointerdown", () => {
+    if (music.wantsPlay && bgm && bgm.paused) {
+        playMusic();
+    }
+}, { passive: true });
+
+document.addEventListener("touchstart", () => {
+    if (music.wantsPlay && bgm && bgm.paused) {
+        playMusic();
+    }
+}, { passive: true });
+
+document.addEventListener("click", () => {
+    if (music.wantsPlay && bgm && bgm.paused) {
+        playMusic();
+    }
+}, { passive: true });
 
 function startExperience() {
     if (state.started) {
