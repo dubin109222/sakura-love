@@ -515,6 +515,8 @@ body.started .note-card {
 
 .memoryLane {
     position: relative;
+    display: flex;
+    flex-direction: column;
     padding: 12px;
     border-radius: 22px;
     overflow: hidden;
@@ -597,6 +599,7 @@ body.started .note-card {
 
 .memoryStage {
     margin-top: 12px;
+    margin-top: auto;
     aspect-ratio: 16 / 9;
     border-radius: 18px;
     overflow: hidden;
@@ -1180,7 +1183,7 @@ body.started .note-card {
     #memoryShowcase {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
-        align-items: start;
+        align-items: stretch;
     }
 
     #memoryShowcaseHead {
@@ -1204,6 +1207,7 @@ body.started .note-card {
         padding: 10px;
         border-radius: 18px;
         min-width: 0;
+        height: 100%;
     }
 
     .memoryLaneTitle {
@@ -1214,6 +1218,7 @@ body.started .note-card {
     .memoryLaneNote {
         font-size: 11px;
         line-height: 1.5;
+        min-height: 4.5em;
     }
 
     .memoryStage {
@@ -1351,6 +1356,7 @@ body.started .note-card {
 
     .memoryLane {
         padding: 9px;
+        height: 100%;
     }
 
     .memoryLaneHeader {
@@ -1370,6 +1376,7 @@ body.started .note-card {
     .memoryLaneNote {
         font-size: 10px;
         line-height: 1.42;
+        min-height: 4.3em;
     }
 
     .memoryStage {
@@ -1479,7 +1486,7 @@ body.started .note-card {
                     <div class="chapterIntro">
                         <p class="chapterEyebrow">Chapter 02</p>
                         <h2 class="chapterTitle">双人成行</h2>
-                        <p class="chapterCopy">把雪地、花园、月下并肩这些瞬间，单独翻成第二页慢慢放映。往后翻的时候，像把整段并肩冒险都重新看一遍。</p>
+                        <p class="chapterCopy">把雪地、花园、月下并肩这些瞬间。</p>
                     </div>
 
                     <div class="chapterStageWrap">
@@ -1489,7 +1496,7 @@ body.started .note-card {
                                 <span class="memoryLaneCount">01 / 05</span>
                             </div>
                             <h4 class="memoryLaneTitle">双人成行的这一页</h4>
-                            <p class="memoryLaneNote">专门留一整页，把喜欢的场景放大一点，像翻书时停在这一章舍不得走。</p>
+                            <p class="memoryLaneNote"></p>
                             <div class="memoryStage">
                                 <img class="memoryPhoto is-active" alt="双人成行游戏画面">
                                 <img class="memoryPhoto" alt="双人成行游戏画面">
@@ -1498,7 +1505,7 @@ body.started .note-card {
                                 <span class="memorySceneLabel">Page 01</span>
                             </div>
                         </article>
-                        <p class="chapterHint">轻点底部的翻页按钮，就像在这一晚把故事一页一页翻下去。</p>
+                        <p class="chapterHint"></p>
                     </div>
                 </div>
             </section>
@@ -1527,7 +1534,7 @@ body.started .note-card {
                                 <span class="memorySceneLabel">Page 01</span>
                             </div>
                         </article>
-                        <p class="chapterHint">第二页和第三页都会继续自动轮播，整页翻过去后，幻灯片还是照常放映。</p>
+                        <p class="chapterHint"></p>
                     </div>
                 </div>
             </section>
