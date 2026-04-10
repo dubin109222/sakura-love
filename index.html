@@ -111,6 +111,10 @@ button {
     justify-content: space-between;
     gap: 18px;
     padding: clamp(16px, 2.8vw, 30px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 #romanceHead {
@@ -326,6 +330,8 @@ body.started .note-card {
     transform: translateY(32px);
     transition: opacity 1.1s ease, transform 1.1s ease;
     overflow: hidden;
+    justify-self: end;
+    margin-left: auto;
 }
 
 #messageCard::before {
@@ -710,7 +716,9 @@ body.started .note-card {
 @media (max-width: 1100px) {
     #contentGrid {
         grid-template-columns: 1fr;
-        width: min(480px, 100%);
+        width: min(560px, 100%);
+        align-items: start;
+        justify-items: stretch;
     }
 
     #noteWall {
@@ -719,14 +727,24 @@ body.started .note-card {
     }
 
     #messageCard {
-        width: 100%;
+        width: min(248px, 34vw);
     }
 }
 
 @media (max-width: 720px) {
+    body {
+        overflow: auto;
+    }
+
     #overlay {
-        gap: 14px;
-        padding: 16px;
+        position: relative;
+        min-height: 100dvh;
+        justify-content: flex-start;
+        gap: 12px;
+        padding:
+            calc(14px + env(safe-area-inset-top))
+            14px
+            calc(18px + env(safe-area-inset-bottom));
     }
 
     #romanceHead {
@@ -736,33 +754,70 @@ body.started .note-card {
     }
 
     #heroTitle {
+        font-size: clamp(26px, 8vw, 38px);
         letter-spacing: 0.03em;
     }
 
+    #heroCopy {
+        margin: 12px 0 14px;
+        max-width: none;
+        font-size: 13px;
+        line-height: 1.72;
+    }
+
+    #heroBadges {
+        gap: 7px;
+    }
+
     #contentGrid {
-        gap: 14px;
+        gap: 12px;
         width: 100%;
+        align-items: start;
+        justify-items: stretch;
+        padding-bottom: 8px;
     }
 
     #noteWall {
-        gap: 10px;
-        padding-bottom: 4px;
+        gap: 9px;
+        width: 100%;
+        max-width: none;
+        padding: 2px 2px 6px 0;
         mask-image: none;
         -webkit-mask-image: none;
+        scroll-padding-inline: 8px;
     }
 
     .note-card {
-        min-width: min(188px, 64vw);
+        min-width: min(150px, 52vw);
+        min-height: 92px;
+        padding: 12px 12px 13px;
+        border-radius: 18px;
     }
 
     #messageCard {
-        width: min(250px, 100%);
-        padding: 12px;
-        border-radius: 26px;
+        width: min(176px, 42vw);
+        max-width: 176px;
+        padding: 10px;
+        border-radius: 22px;
     }
 
     #photoFrame {
+        padding: 8px 8px 26px;
+        border-radius: 16px;
         transform: rotate(-1.2deg);
+    }
+
+    #photoFrame::before,
+    #photoFrame::after {
+        top: -8px;
+        width: 36px;
+        height: 12px;
+    }
+
+    #photoCaption {
+        bottom: 9px;
+        font-size: 9px;
+        letter-spacing: 0.18em;
     }
 
     #cardFooter {
@@ -779,6 +834,66 @@ body.started .note-card {
         padding: 12px 18px;
         font-size: 12px;
         letter-spacing: 0.1em;
+    }
+}
+
+@media (max-width: 480px) {
+    #overlay {
+        gap: 10px;
+        padding:
+            calc(12px + env(safe-area-inset-top))
+            12px
+            calc(16px + env(safe-area-inset-bottom));
+    }
+
+    #romanceHead {
+        padding: 16px 14px 18px;
+        border-radius: 22px;
+    }
+
+    #heroTitle {
+        font-size: clamp(24px, 7.8vw, 32px);
+    }
+
+    #heroCopy {
+        font-size: 12px;
+        line-height: 1.68;
+    }
+
+    .heroBadge {
+        padding: 7px 10px;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+    }
+
+    #contentGrid {
+        gap: 9px;
+    }
+
+    .note-card {
+        min-width: min(140px, 54vw);
+        min-height: 88px;
+    }
+
+    .noteTitle {
+        font-size: 16px;
+    }
+
+    .noteText {
+        font-size: 12.5px;
+        line-height: 1.55;
+    }
+
+    #messageCard {
+        width: min(148px, 39vw);
+        max-width: 148px;
+        padding: 9px;
+        border-radius: 20px;
+    }
+
+    #photoFrame {
+        padding: 7px 7px 22px;
+        border-radius: 14px;
     }
 }
 
@@ -992,7 +1107,9 @@ const scene = {
     moonX: 0,
     moonY: 0,
     moonRadius: 0,
-    bridgeWidth: 0
+    bridgeWidth: 0,
+    isNarrow: false,
+    isTall: false
 };
 
 const stars = [];
@@ -1133,12 +1250,12 @@ function seedScene() {
     heartLights.length = 0;
     clouds.length = 0;
 
-    const starCount = Math.round(clamp(scene.width * scene.height / 9000, 90, 170));
-    const petalCount = Math.round(clamp(scene.width / 24, 26, 54));
-    const fireflyCount = Math.round(clamp(scene.width / 55, 12, 26));
-    const lanternCount = Math.round(clamp(scene.width / 220, 4, 8));
+    const starCount = Math.round(clamp(scene.width * scene.height / 8600, 96, 178));
+    const petalCount = Math.round(clamp(scene.width / 22 + (scene.isNarrow ? 8 : 0), 30, 60));
+    const fireflyCount = Math.round(clamp(scene.width / 48 + (scene.isNarrow ? 4 : 0), 14, 30));
+    const lanternCount = Math.round(clamp(scene.width / 200 + (scene.isNarrow ? 1 : 0), 5, 9));
     const heartCount = 88;
-    const cloudCount = Math.round(clamp(scene.width / 260, 4, 8));
+    const cloudCount = Math.round(clamp(scene.width / 220 + (scene.isNarrow ? 1 : 0), 5, 9));
 
     for (let i = 0; i < starCount; i++) {
         stars.push(createStar());
@@ -1169,11 +1286,13 @@ function resizeScene() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     scene.width = window.innerWidth;
     scene.height = window.innerHeight;
-    scene.horizon = scene.height * 0.68;
-    scene.moonX = scene.width * 0.78;
-    scene.moonY = scene.height * 0.22;
-    scene.moonRadius = Math.min(scene.width, scene.height) * 0.07;
-    scene.bridgeWidth = Math.min(scene.width * 0.36, 340);
+    scene.isNarrow = scene.width <= 720;
+    scene.isTall = scene.height / Math.max(scene.width, 1) > 1.65;
+    scene.horizon = scene.height * (scene.isNarrow ? (scene.isTall ? 0.76 : 0.73) : 0.68);
+    scene.moonX = scene.width * (scene.isNarrow ? 0.82 : 0.78);
+    scene.moonY = scene.height * (scene.isNarrow ? 0.18 : 0.22);
+    scene.moonRadius = Math.min(scene.width, scene.height) * (scene.isNarrow ? 0.08 : 0.07);
+    scene.bridgeWidth = Math.min(scene.width * (scene.isNarrow ? 0.44 : 0.36), scene.isNarrow ? 300 : 340);
 
     canvas.width = scene.width * dpr;
     canvas.height = scene.height * dpr;
@@ -1326,6 +1445,67 @@ function drawMountains() {
     ctx.stroke();
 }
 
+function drawDistantGarden(time, bloom) {
+    const baseY = scene.horizon + 6;
+    const structures = [
+        { x: scene.width * 0.18, scale: 0.82 },
+        { x: scene.width * 0.84, scale: 0.72 }
+    ];
+
+    ctx.save();
+
+    for (const structure of structures) {
+        const drift = Math.sin(time * 0.00045 + structure.x * 0.01) * 1.6;
+
+        ctx.fillStyle = "rgba(15, 12, 21, 0.9)";
+        ctx.beginPath();
+        ctx.ellipse(structure.x, baseY + 8, 36 * structure.scale, 10 * structure.scale, 0, 0, TAU);
+        ctx.fill();
+
+        ctx.fillStyle = "rgba(17, 12, 22, 0.96)";
+        ctx.fillRect(structure.x - 10 * structure.scale, baseY - 7 * structure.scale, 4 * structure.scale, 17 * structure.scale);
+        ctx.fillRect(structure.x + 6 * structure.scale, baseY - 7 * structure.scale, 4 * structure.scale, 17 * structure.scale);
+
+        ctx.beginPath();
+        ctx.moveTo(structure.x - 18 * structure.scale, baseY - 6 * structure.scale);
+        ctx.lineTo(structure.x, baseY - 19 * structure.scale + drift);
+        ctx.lineTo(structure.x + 18 * structure.scale, baseY - 6 * structure.scale);
+        ctx.lineTo(structure.x + 13 * structure.scale, baseY - 2 * structure.scale);
+        ctx.lineTo(structure.x - 13 * structure.scale, baseY - 2 * structure.scale);
+        ctx.closePath();
+        ctx.fill();
+
+        const glow = 0.14 + bloom * 0.14;
+        ctx.fillStyle = "rgba(255, 205, 146, " + glow.toFixed(3) + ")";
+        ctx.shadowColor = "rgba(255, 182, 109, " + (glow * 1.4).toFixed(3) + ")";
+        ctx.shadowBlur = 14;
+        roundedRect(structure.x - 5.2 * structure.scale, baseY - 1 * structure.scale, 10.4 * structure.scale, 7 * structure.scale, 2.8 * structure.scale);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        drawBlossomCluster(
+            structure.x + 22 * structure.scale,
+            baseY - 18 * structure.scale,
+            0.28 + bloom * 0.06,
+            time
+        );
+    }
+
+    const lightPoints = [0.09, 0.13, 0.24, 0.29, 0.69, 0.74, 0.88, 0.92];
+    for (const point of lightPoints) {
+        const x = scene.width * point;
+        const pulse = 0.12 + (Math.sin(time * 0.002 + x * 0.02) * 0.5 + 0.5) * 0.1 + bloom * 0.06;
+        ctx.fillStyle = "rgba(255, 212, 156, " + pulse.toFixed(3) + ")";
+        ctx.shadowColor = "rgba(255, 184, 112, " + (pulse * 1.4).toFixed(3) + ")";
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        ctx.arc(x, baseY + 1.5, 1.8, 0, TAU);
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
 function drawLake(time, bloom) {
     const water = ctx.createLinearGradient(0, scene.horizon, 0, scene.height);
     water.addColorStop(0, "rgba(18, 20, 34, 0.82)");
@@ -1359,6 +1539,89 @@ function drawLake(time, bloom) {
         ctx.beginPath();
         ctx.moveTo(drift, y);
         ctx.lineTo(scene.width + drift, y);
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+function drawFloatingPetalsOnLake(time, bloom) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, scene.horizon, scene.width, scene.height - scene.horizon);
+    ctx.clip();
+
+    for (let i = 0; i < 16; i++) {
+        const drift = (time * (0.004 + (i % 4) * 0.0006) + i * 47) % (scene.width + 120) - 60;
+        const x = drift + Math.sin(time * 0.0008 + i) * 8;
+        const y = scene.horizon + 24 + (i % 6) * 16 + Math.sin(time * 0.0012 + i * 0.8) * 6;
+        const size = 2.4 + (i % 3) * 0.65;
+        const alpha = 0.12 + bloom * 0.1;
+
+        drawSakuraPetalShape(x, y, size, time * 0.001 + i * 0.7, alpha);
+
+        ctx.strokeStyle = "rgba(255, 214, 228, " + (0.06 + bloom * 0.05).toFixed(3) + ")";
+        ctx.lineWidth = 0.75;
+        ctx.beginPath();
+        ctx.arc(x, y + 4, 5 + size * 1.6, 0.15 * Math.PI, 0.85 * Math.PI);
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+function drawWaterReflections(time, bloom) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, scene.horizon, scene.width, scene.height - scene.horizon);
+    ctx.clip();
+
+    const reflection = ctx.createLinearGradient(scene.moonX, scene.horizon + 4, scene.moonX, scene.height);
+    reflection.addColorStop(0, "rgba(255, 229, 188, 0)");
+    reflection.addColorStop(0.16, "rgba(255, 229, 188, " + (0.08 + bloom * 0.06).toFixed(3) + ")");
+    reflection.addColorStop(0.54, "rgba(255, 196, 170, " + (0.04 + bloom * 0.04).toFixed(3) + ")");
+    reflection.addColorStop(1, "rgba(255, 196, 170, 0)");
+    ctx.fillStyle = reflection;
+    ctx.beginPath();
+    ctx.ellipse(
+        scene.moonX + Math.sin(time * 0.0009) * 6,
+        scene.horizon + (scene.height - scene.horizon) * 0.42,
+        scene.isNarrow ? 36 : 52,
+        (scene.height - scene.horizon) * 0.48,
+        0,
+        0,
+        TAU
+    );
+    ctx.fill();
+
+    const shorelineLights = scene.isNarrow
+        ? [0.16, 0.24, 0.76, 0.84]
+        : [0.09, 0.13, 0.24, 0.29, 0.69, 0.74, 0.88, 0.92];
+
+    shorelineLights.forEach((point, index) => {
+        const x = scene.width * point + Math.sin(time * 0.00085 + index) * 4;
+        const shimmer = 22 + (index % 4) * 8 + bloom * 18;
+        const alpha = 0.05 + bloom * 0.05;
+
+        for (let streak = 0; streak < 3; streak++) {
+            const y = scene.horizon + 8 + streak * 9 + (index % 2) * 4;
+            ctx.strokeStyle = "rgba(255, 211, 159, " + (alpha - streak * 0.012).toFixed(3) + ")";
+            ctx.lineWidth = 1.1 - streak * 0.18;
+            ctx.beginPath();
+            ctx.moveTo(x + streak * 1.6 - 1, y);
+            ctx.lineTo(x + Math.sin(time * 0.0012 + index + streak) * 3.2, y + shimmer - streak * 5);
+            ctx.stroke();
+        }
+    });
+
+    for (let i = 0; i < 7; i++) {
+        const x = scene.width * 0.5 + (i - 3) * (scene.isNarrow ? 14 : 18);
+        const y = scene.horizon + 18 + i * 6;
+        ctx.strokeStyle = "rgba(255, 190, 217, " + (0.04 + bloom * 0.03).toFixed(3) + ")";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x - 8, y);
+        ctx.lineTo(x + 8, y + 8);
         ctx.stroke();
     }
 
@@ -1437,6 +1700,26 @@ function drawCenterSakuraTree(time, bloom, progress) {
 
     ctx.save();
 
+    ctx.beginPath();
+    ctx.rect(0, scene.horizon, scene.width, scene.height - scene.horizon);
+    ctx.clip();
+    ctx.translate(centerX, scene.horizon + 18 * scale);
+    ctx.scale(1, 0.62);
+    ctx.globalAlpha = 0.12 + bloom * 0.05;
+    ctx.fillStyle = "rgba(255, 188, 214, 0.18)";
+    ctx.beginPath();
+    ctx.ellipse(0, 28 * scale, 92 * scale, 40 * scale, 0, 0, TAU);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(89, 44, 57, 0.2)";
+    ctx.lineWidth = 8 * scale;
+    ctx.beginPath();
+    ctx.moveTo(0, -4 * scale);
+    ctx.lineTo(0, 44 * scale);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.save();
+
     const glow = ctx.createRadialGradient(centerX, baseY - trunkHeight * 0.86, 0, centerX, baseY - trunkHeight * 0.86, 146 * scale);
     glow.addColorStop(0, "rgba(255, 206, 224, " + (0.16 + bloom * 0.1).toFixed(3) + ")");
     glow.addColorStop(0.58, "rgba(255, 182, 210, " + (0.08 + bloom * 0.05).toFixed(3) + ")");
@@ -1506,6 +1789,15 @@ function drawCenterSakuraTree(time, bloom, progress) {
         );
     }
 
+    const mound = ctx.createRadialGradient(centerX, baseY + 4, 0, centerX, baseY + 4, 74 * scale);
+    mound.addColorStop(0, "rgba(38, 28, 38, 0.92)");
+    mound.addColorStop(0.7, "rgba(22, 14, 24, 0.94)");
+    mound.addColorStop(1, "rgba(16, 11, 20, 0)");
+    ctx.fillStyle = mound;
+    ctx.beginPath();
+    ctx.ellipse(centerX, baseY + 7, 70 * scale, 22 * scale, 0, 0, TAU);
+    ctx.fill();
+
     ctx.fillStyle = "rgba(22, 12, 22, 0.24)";
     ctx.beginPath();
     ctx.ellipse(centerX, baseY + 10, 54 * scale, 10 * scale, 0, 0, TAU);
@@ -1521,6 +1813,74 @@ function drawCenterSakuraTree(time, bloom, progress) {
         const alpha = 0.18 + (1 - fall) * 0.3;
         drawSakuraPetalShape(x, y, size, time * 0.001 + i * 0.8, alpha * (0.72 + bloom * 0.34));
     }
+
+    ctx.restore();
+}
+
+function drawForegroundBanks(time, bloom) {
+    const bottom = scene.height;
+    const leftRise = bottom - Math.min(scene.height * 0.15, 118);
+    const rightRise = bottom - Math.min(scene.height * 0.14, 110);
+
+    ctx.save();
+
+    ctx.fillStyle = "rgba(10, 10, 18, 0.94)";
+    ctx.beginPath();
+    ctx.moveTo(0, bottom);
+    ctx.lineTo(0, leftRise);
+    ctx.quadraticCurveTo(scene.width * 0.07, leftRise - 18, scene.width * 0.16, bottom - 10);
+    ctx.lineTo(scene.width * 0.23, bottom);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(scene.width, bottom);
+    ctx.lineTo(scene.width, rightRise);
+    ctx.quadraticCurveTo(scene.width * 0.93, rightRise - 16, scene.width * 0.84, bottom - 8);
+    ctx.lineTo(scene.width * 0.78, bottom);
+    ctx.closePath();
+    ctx.fill();
+
+    const reedGroups = [
+        { x: scene.width * 0.09, y: bottom - 22, count: 6, dir: 1 },
+        { x: scene.width * 0.88, y: bottom - 18, count: 7, dir: -1 }
+    ];
+
+    ctx.lineCap = "round";
+    for (const group of reedGroups) {
+        for (let i = 0; i < group.count; i++) {
+            const offset = (i - group.count / 2) * 6;
+            const reedHeight = 24 + (i % 3) * 10;
+            ctx.strokeStyle = "rgba(55, 78, 54, 0.72)";
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(group.x + offset, group.y);
+            ctx.quadraticCurveTo(
+                group.x + offset + group.dir * (7 + i),
+                group.y - reedHeight * 0.55 + Math.sin(time * 0.001 + i) * 2,
+                group.x + offset + group.dir * (13 + i * 1.4),
+                group.y - reedHeight
+            );
+            ctx.stroke();
+        }
+    }
+
+    const stones = [
+        [scene.width * 0.14, bottom - 8, 14, 6],
+        [scene.width * 0.2, bottom - 5, 10, 5],
+        [scene.width * 0.82, bottom - 7, 15, 6],
+        [scene.width * 0.89, bottom - 4, 9, 5]
+    ];
+
+    ctx.fillStyle = "rgba(42, 36, 46, 0.94)";
+    for (const [x, y, rx, ry] of stones) {
+        ctx.beginPath();
+        ctx.ellipse(x, y, rx, ry, 0, 0, TAU);
+        ctx.fill();
+    }
+
+    drawBlossomCluster(scene.width * 0.12, bottom - 34, 0.34 + bloom * 0.08, time);
+    drawBlossomCluster(scene.width * 0.86, bottom - 30, 0.3 + bloom * 0.08, time);
 
     ctx.restore();
 }
@@ -1563,11 +1923,14 @@ function drawBlossomCluster(x, y, scale, time) {
 
 function drawBranchSide(time, mirrored) {
     const sway = Math.sin(time * 0.0007 + (mirrored ? 1.8 : 0)) * 4;
+    const branchScale = scene.isNarrow ? 0.78 : 1;
 
     ctx.save();
     if (mirrored) {
         ctx.translate(scene.width, 0);
-        ctx.scale(-1, 1);
+        ctx.scale(-branchScale, branchScale);
+    } else {
+        ctx.scale(branchScale, branchScale);
     }
 
     ctx.lineCap = "round";
@@ -2006,11 +2369,15 @@ function render(time) {
     drawClouds(time, bloom);
     drawMountains();
     drawLake(time, bloom);
+    drawDistantGarden(time, bloom);
+    drawFloatingPetalsOnLake(time, bloom);
+    drawWaterReflections(time, bloom);
     drawMist(time, bloom);
     drawCenterSakuraTree(time, bloom, heart);
     drawBridge(glow);
     drawLanterns(time, step, elapsed, bloom);
     drawBranches(time);
+    drawForegroundBanks(time, bloom);
     drawPetals(time, step, bloom);
     drawFireflies(time, bloom);
     drawVignette();
